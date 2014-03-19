@@ -5,7 +5,7 @@ It's the missing grep command for your Xcode console.
 
 
 # Images
-
+<img src="https://github.com/AndreasPrang/AWPXcodeLogGrep/blob/master/Images/ScreenShot.png?raw=true" />
 
 # How to use
 Just compile AWPXcodeLogGrep and restart Xcode. The new filed will be visible when the first Logs are comming :-)
