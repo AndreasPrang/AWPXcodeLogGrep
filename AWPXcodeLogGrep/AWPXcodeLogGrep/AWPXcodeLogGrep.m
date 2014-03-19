@@ -188,20 +188,23 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 //    x += logLevelButton.frame.size.width;
     
     // add regex filter textview
-    NSSearchField *searchField = [[NSSearchField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
-    searchField.font = font;
-    [searchField.cell setPlaceholderString:@"Grep expression"];
-	[searchField setDelegate:self];
-    [pView addSubview:searchField];
-    [searchField release];
+//    NSSearchField *searchField = [[NSSearchField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
+//    searchField.font = font;
+//    [searchField.cell setPlaceholderString:@"Grep expression"];
+//	[searchField setDelegate:self];
+//    [pView addSubview:searchField];
+//    [searchField release];
     
-//    self.searchTokenField = [[NSTokenField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
-//    [self.searchTokenField setTokenStyle:NSPlainTextTokenStyle];
-//    [self.searchTokenField setDelegate:self];		// this can also be done in Interface Builder
-//    [self.searchTokenField setCompletionDelay:0.5];	// speed up auto completion a bit for type matching
+    self.searchTokenField = [[NSTokenField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
+    [self.searchTokenField setTokenStyle:NSPlainTextTokenStyle];
+    [self.searchTokenField setDelegate:self];		// this can also be done in Interface Builder
+    [self.searchTokenField setCompletionDelay:0.5];	// speed up auto completion a bit for type matching
+    [self.searchTokenField.cell setPlaceholderString:@"Grep expression"];
+    [pView addSubview:self.searchTokenField];
+    [self.searchTokenField release];
 
     
-    x += searchField.frame.size.width;
+    x += self.searchTokenField.frame.size.width;
     
     // add config button
 	NSButton *configButton =[[NSButton alloc] initWithFrame:CGRectZero];
@@ -217,40 +220,29 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
     [configButton setTarget:self];
     [configButton setAction:@selector(configButtonClick:)];
     
-    self.searchField = searchField;
-	
 	[self proceedGrep];
+}
+
+
+
+- (NSTokenStyle)tokenField:(NSTokenField *)tokenField styleForRepresentedObject:(id)representedObject
+{
+	NSTokenStyle returnStyle = NSPlainTextTokenStyle;
+    returnStyle = NSRoundedTokenStyle;
+
+    return returnStyle;
 }
 
 - (void)proceedGrep;
 {
-	[self proceedGrepInRange:NSMakeRange(9999, 9999)];
+	[self proceedGrepInRange:NSMakeRange(0, self.textStorage.string.length)];
+    XLog(@"[AWPXcodeLogGrep proceedGrep]");
 }
 
 - (void)proceedGrepInRange:(NSRange)range;
 {
-	if (!self.textStorage)
-	{
-		return;
-	}
-	
 	NSString *string	= self.textStorage.string;
-	NSRange			 searchRange;
-	if (NSEqualRanges(range, NSMakeRange(9999, 9999)))
-	{
-		NSLog(@"proceedGrep");
-		searchRange	= NSMakeRange(0, string.length);
-	}
-	else
-	{
-		NSLog(@"proceedGrepInRange:");
-		searchRange = range;
-	}
-
-//	NSFont			*visibleFont					= [NSFont fontWithName:@"Palatino-Roman" size:14.0];
-//	NSDictionary	*visibleAttributesDictionary	= [NSDictionary dictionaryWithObject:visibleFont forKey:NSFontAttributeName];
-//	NSFont			*invisibleFont					= [NSFont systemFontOfSize:0.00001];
-//	NSDictionary	*invisibleAttributesDictionary	= [NSDictionary dictionaryWithObject:invisibleFont forKey:NSFontAttributeName];
+	NSRange searchRange = range;
 
 	if (!self.configWindowController)
 	{
@@ -273,26 +265,49 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 	NSColor			*lineHiddenColor							= [NSColor clearColor];
 	NSDictionary	*lineHiddenAttributesDictionary				= @{NSFontAttributeName: lineHiddenFont, NSForegroundColorAttributeName: lineHiddenColor};
 
-	NSString		*searchString								= self.searchField.stringValue;
+	NSArray         *searchStrings								= self.searchTokenField.objectValue;
 
 	[self.textStorage beginEditing];
 
-	if (searchString.length)
+	if (searchStrings.count)
 	{
 		[string enumerateSubstringsInRange:searchRange
 								   options:NSStringEnumerationByLines
 								usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
 		 {
-			 NSRange searchRange = [substring rangeOfString:searchString options:NSCaseInsensitiveSearch];
-			 NSRange textStorageSearchSubStringRange = NSMakeRange(substringRange.location + searchRange.location, searchRange.length);
-
-			 if (searchRange.location != NSNotFound)
+             BOOL substringContainsSearchString = NO;
+             [self.textStorage setAttributes:lineWithSearchStringAttributesDictionary range:substringRange];
+             
+             for (NSString *searchString in searchStrings)
+             {
+                 
+                 NSRange lineSearchRange = NSMakeRange(0,substring.length);
+                 NSRange foundRange;
+                 while (lineSearchRange.location < substring.length)
+                 {
+                     lineSearchRange.length = substring.length-lineSearchRange.location;
+                     foundRange = [substring rangeOfString:searchString options:NSCaseInsensitiveSearch range:lineSearchRange];
+                     if (foundRange.location != NSNotFound)
+                     {
+                         lineSearchRange.location = foundRange.location+foundRange.length;
+                         
+                         XLog(@"searchString: %@", searchString.class);
+                         NSRange textStorageSearchSubStringRange = NSMakeRange(foundRange.location + substringRange.location, foundRange.length);
+                         XLog(@"Range: %lui || %lui", textStorageSearchSubStringRange.location, textStorageSearchSubStringRange.length);
+                         [self.textStorage setAttributes:searchstringAttributesDictionary range:textStorageSearchSubStringRange];
+                         substringContainsSearchString = YES;
+                     }
+                     else
+                     {
+                         // no more substring to find
+                         break;
+                     }
+                 }
+             }
+             
+			 if (substringContainsSearchString)
 			 {
-				 // line with search string
-				 [self.textStorage setAttributes:lineWithSearchStringAttributesDictionary range:substringRange];
-				 
-				 // search string
-				 [self.textStorage setAttributes:searchstringAttributesDictionary range:textStorageSearchSubStringRange];
+                 
 			 }
 			 else
 			 {
@@ -310,7 +325,7 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 	}
 	else
 	{
-		[self.textStorage setAttributes:lineWithoutSearchStringAttributesDictionary range:searchRange];
+		[self.textStorage setAttributes:lineWithSearchStringAttributesDictionary range:searchRange];
 	}
 	
 	[self.textStorage endEditing];
@@ -358,8 +373,8 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 
 - (void)controlTextDidChange:(NSNotification *)notification
 {
-	NSSearchField *searchField = (NSSearchField *)notification.object;
-	XLog(@"controlTextDidChange: %@", searchField.stringValue);
+	NSTokenField *searchTokenField = (NSTokenField *)notification.object;
+	XLog(@"controlTextDidChange: %@", searchTokenField.objectValue);
 
 	self.currentSearStarts++;
 	

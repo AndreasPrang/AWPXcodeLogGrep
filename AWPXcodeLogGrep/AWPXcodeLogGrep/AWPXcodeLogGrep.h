@@ -10,10 +10,10 @@
 #import <AppKit/AppKit.h>
 #import "ConfigWindowController.h"
 
-@interface AWPXcodeLogGrep : NSObject <NSTokenFieldDelegate>
+@interface AWPXcodeLogGrep : NSObject <NSTokenFieldDelegate, NSTextFieldDelegate>
 
 @property (nonatomic, strong) NSSearchField *searchField;
-//@property (nonatomic, strong) NSTokenField *searchTokenField;
+@property (nonatomic, strong) NSTokenField *searchTokenField;
 
 @property (nonatomic, strong) NSTextStorage *textStorage;
 @property (nonatomic) __block NSUInteger currentSearStarts;

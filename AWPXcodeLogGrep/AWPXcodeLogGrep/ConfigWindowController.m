@@ -51,6 +51,20 @@
 
 - (IBAction)saveButtonUp:(NSButton *)sender
 {
+	NSFontManager *fontManager = [NSFontManager sharedFontManager];
+    [fontManager setAction:nil];
+	[fontManager setTarget:nil];
+	
+	NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
+	[colorPanel setTarget:nil];
+	[colorPanel setAction:nil];
+    
+    if ([[NSFontPanel sharedFontPanel] isVisible])
+        [[NSFontPanel sharedFontPanel] orderOut:self];
+
+    if ([colorPanel isVisible])
+        [colorPanel orderOut:self];
+
 	[self.window orderOut:self];
 	[NSApp stopModal];
 
@@ -75,6 +89,22 @@
 	
     NSFontPanel *fontPanel = [fontManager fontPanel:YES];
     [fontPanel makeKeyAndOrderFront:sender];
+    
+    if (selectedFontButton == self.linesWithResultsButton)
+	{
+        [fontPanel setPanelFont:self.lineWithResultsFont isMultiple:NO];
+        [colorPanel setColor:self.lineWithResultsColor];
+	}
+	else if (selectedFontButton == self.linesWithoutResultsButton)
+	{
+        [fontPanel setPanelFont:self.lineWithoutResultsFont isMultiple:NO];
+        [colorPanel setColor:self.lineWithoutResultsColor];
+	}
+	else if (selectedFontButton == self.searchStringResultsButton)
+	{
+        [fontPanel setPanelFont:self.searchStringResultsFont isMultiple:NO];
+        [colorPanel setColor:self.searchStringResultsColor];
+    }
 }
 
 - (void)changeFont:(id)sender
@@ -128,22 +158,25 @@
 
 	NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
 	NSColor *color = colorPanel.color;
-	NSData* colorAsData = [NSArchiver archivedDataWithRootObject:color];
-	
-	if (selectedFontButton == self.linesWithResultsButton)
-	{
-		[[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:linesWithResultsColor];
-	}
-	else if (selectedFontButton == self.linesWithoutResultsButton)
-	{
-		[[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:linesWithoutResultsColor];
-	}
-	else if (selectedFontButton == self.searchStringResultsButton)
-	{
-		[[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:searchStringsResultsColor];
-	}
-
-	[[NSUserDefaults standardUserDefaults] synchronize];
+    if (color)
+    {
+        NSData* colorAsData = [NSArchiver archivedDataWithRootObject:color];
+        
+        if (selectedFontButton == self.linesWithResultsButton)
+        {
+            [[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:linesWithResultsColor];
+        }
+        else if (selectedFontButton == self.linesWithoutResultsButton)
+        {
+            [[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:linesWithoutResultsColor];
+        }
+        else if (selectedFontButton == self.searchStringResultsButton)
+        {
+            [[NSUserDefaults standardUserDefaults] setObject:colorAsData forKey:searchStringsResultsColor];
+        }
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (void)changeAttributes:(id) sender
@@ -315,7 +348,7 @@
 	}
 	else
 	{
-		color = [NSColor blackColor];
+		color = [NSColor redColor];
 	}
 	
 	return color;
