@@ -11,6 +11,6 @@
 @interface TextStorage : NSTextStorage
 
 // used to replace NSTextStorage's method
-- (void)fixAttributesInRange:(NSRange)range;
+- (void)TextStorage:(NSRange)range;
 
 @end

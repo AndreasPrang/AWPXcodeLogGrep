@@ -142,18 +142,8 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
     
 	self.textStorage = textStorage;
 	
-//    XLog_Console *console = [[XLog_Console alloc] init];
-//    console.realTextStorage = realTextStorage;
-//    console.textView = textView;
-//    console.lastStrlen = 0;
-//    console.lastSearchText = nil;
-//    console.lastLogLevel = 0;
     [self addCustomizedViews:outputPopUpButton textStorage:textStorage];
-//    // add to map
-//    [consoleTextStorageMap setObject:console forKey:hash(textStorage)]; // add textStorage to prevent multipule init console
-//    [consoleTextStorageMap setObject:console forKey:hash(realTextStorage)]; // add realTextStorage to parse it.
-//    // MXLog(@"%ld , %ld", [textStorage hash], [realTextStorage hash]); // there are equal...
-//    [console release];
+
     return YES;
 }
 
@@ -168,33 +158,6 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
     CGFloat pHeight = pView.frame.size.height;
     CGFloat margin = 1.0f;   // search field and filter button's top/bottom margin
     
-    // add log level popup button
-//    NSPopUpButton *logLevelButton = [[NSPopUpButton alloc] initWithFrame:CGRectZero pullsDown:NO];
-//    NSArray *items = [NSArray arrayWithObjects:@"All logs", @"Debug", @"Info", @"Warn", @"Error", nil];
-//    [logLevelButton addItemsWithTitles:items];
-//    [logLevelButton setBordered:NO];
-//    [logLevelButton setFont:font];
-//    [logLevelButton sizeToFit];
-//    CGRect frame = logLevelButton.frame;
-//    logLevelButton.frame = CGRectMake(x, (pHeight - frame.size.height) / 2.0f, frame.size.width, frame.size.height) ;
-//    [pView addSubview:logLevelButton];
-//    [logLevelButton release];
-//    
-    // set click handler
-//    [logLevelButton setTarget:self];
-//    [logLevelButton setAction:@selector(onLogLevelButtonClick:)];
-//    logLevelButton.tag = (long)textStorage; // save the refer
-    
-//    x += logLevelButton.frame.size.width;
-    
-    // add regex filter textview
-//    NSSearchField *searchField = [[NSSearchField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
-//    searchField.font = font;
-//    [searchField.cell setPlaceholderString:@"Grep expression"];
-//	[searchField setDelegate:self];
-//    [pView addSubview:searchField];
-//    [searchField release];
-    
     self.searchTokenField = [[NSTokenField alloc] initWithFrame:CGRectMake(x, margin, 200.0f, pHeight - 2 * margin)];
     [self.searchTokenField setTokenStyle:NSPlainTextTokenStyle];
     [self.searchTokenField setDelegate:self];		// this can also be done in Interface Builder
@@ -202,7 +165,6 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
     [self.searchTokenField.cell setPlaceholderString:@"Grep expression"];
     [pView addSubview:self.searchTokenField];
     [self.searchTokenField release];
-
     
     x += self.searchTokenField.frame.size.width;
     
@@ -339,7 +301,6 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 {
 	XLog(@"fixAttributesInRange:");
 //	XLog(@"self = %@", self);
-//    originalFixAttributesInRange(self, _cmd, range);
     
     NSString *className = NSStringFromClass([self class]);
 //    XLog(@"fixAttributesInRange[%@]", className);
@@ -352,7 +313,6 @@ static AWPXcodeLogGrep *sharedPlugin = nil;
 	if (self == sharedPlugin.textStorage && sharedPlugin)
 	{
 		[sharedPlugin proceedGrepInRange:range];
-//		[sharedPlugin proceedGrep];
 		
 		return;
 	}
