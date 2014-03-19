@@ -38,6 +38,7 @@
 		D895E9F81870D12300E73014 /* ConfigWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConfigWindowController.h; path = AWPXcodeLogGrep/ConfigWindowController.h; sourceTree = "<group>"; };
 		D895E9F91870D12300E73014 /* ConfigWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConfigWindowController.m; path = AWPXcodeLogGrep/ConfigWindowController.m; sourceTree = "<group>"; };
 		D895E9FA1870D12300E73014 /* ConfigWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ConfigWindowController.xib; path = AWPXcodeLogGrep/ConfigWindowController.xib; sourceTree = "<group>"; };
+		D89B36CC18DA1F4F004B0EE4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +59,7 @@
 		C13C7C3317E01826003665EA = {
 			isa = PBXGroup;
 			children = (
+				D89B36CC18DA1F4F004B0EE4 /* README.md */,
 				C13C7C4517E01826003665EA /* AWPXcodeLogGrep */,
 				C13C7C3E17E01826003665EA /* Frameworks */,
 				C13C7C3D17E01826003665EA /* Products */,
